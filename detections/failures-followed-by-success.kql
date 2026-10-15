@@ -10,7 +10,8 @@ let FailedLogons =
     | project
         IpAddress,
         FailureTime = TimeGenerated,
-        FailedAccount = TargetAccount;
+        FailedAccount = TargetAccount,
+        FailureComputer = Computer;
 let SuccessfulLogons =
     SecurityEvent
     | where TimeGenerated >= ago(Lookback)
@@ -19,21 +20,27 @@ let SuccessfulLogons =
     | project
         IpAddress,
         SuccessTime = TimeGenerated,
-        SuccessfulAccount = TargetAccount;
+        SuccessfulAccount = TargetAccount,
+        SuccessComputer = Computer;
 SuccessfulLogons
 | join kind=inner FailedLogons on IpAddress
 | where FailureTime < SuccessTime
 | where FailureTime >= SuccessTime - CorrelationWindow
 | summarize
-    FailedAttempts = count(),
+    FailedAttempts = dcount(strcat(
+        tostring(FailureTime), "|",
+        FailedAccount, "|",
+        FailureComputer
+    )),
     TargetedAccounts = dcount(FailedAccount),
     FirstFailure = min(FailureTime),
     LastFailure = max(FailureTime)
-    by IpAddress, SuccessTime, SuccessfulAccount
+    by IpAddress, SuccessTime, SuccessfulAccount, SuccessComputer
 | where FailedAttempts >= FailureThreshold
 | project
     IpAddress,
     SuccessfulAccount,
+    SuccessComputer,
     FirstFailure,
     LastFailure,
     SuccessTime,

@@ -1,10 +1,15 @@
+
+let Lookback = 10m;
+let FailureThreshold = 5;
 SecurityEvent
-| where TimeGenerated > ago(10m)
+| where TimeGenerated >= ago(Lookback)
 | where EventID == 4625
 | where isnotempty(IpAddress)
 | summarize
-FailedAttempts = count(),
-TargetedAccounts = dcount(TargetAccount)
-by IpAddress, bin(TimeGenerated, 10m)
-| where FailedAttempts >= 5
+    FailedAttempts = count(),
+    TargetedAccounts = dcount(TargetAccount),
+    FirstFailure = min(TimeGenerated),
+    LastFailure = max(TimeGenerated)
+    by IpAddress
+| where FailedAttempts >= FailureThreshold
 | order by FailedAttempts desc

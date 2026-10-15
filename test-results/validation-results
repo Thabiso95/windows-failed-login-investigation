@@ -1,0 +1,42 @@
+Detection Validation Results
+
+Test Objective
+
+Validate whether the failed-login detection logic identifies repeated authentication failures in a synthetic dataset.
+
+Test Environment
+
+- Platform: Google Colab
+- Language: Python
+- Input: Synthetic Windows authentication events
+- Detection threshold: At least five failed logins from one source IP within ten minutes
+
+Expected Results
+
+Source IP| Failed Attempts| Expected Outcome
+203.0.113.25| 8| Alert
+198.51.100.40| 2| No alert
+
+Validation Method
+
+The Python test groups failed authentication events by source IP and evaluates the preceding ten-minute window for each event.
+
+Interpretation
+
+The primary source meets the configured threshold. The secondary source does not.
+
+The alert indicates suspicious repeated authentication failures; it does not independently establish malicious intent or account compromise.
+
+Limitations
+
+- Test results apply only to the supplied synthetic dataset.
+- Python validation does not execute the Sentinel KQL query.
+- The Python implementation uses a rolling window, while the initial KQL query uses fixed time bins.
+- The detection threshold may need adjustment based on the environment and false-positive rates.
+
+Next Steps
+
+1. Align the KQL logic with the validated detection behaviour.
+2. Add tests for normal login mistakes and successful authentication following failures.
+3. Measure false positives and false negatives using additional test cases.
+4. Validate the final KQL in a suitable Sentinel environment before deployment.

@@ -44,7 +44,7 @@ Test Execution Evidence
 
 The screenshot below shows the Python prototype's test results.
 
-"Python test results" (screenshots/Screenshot_20261015_110832_Chrome.jpg)
+"Python test results" (screenshots/python-test-results.jpg)
 
 See the "detection test matrix" (test-results/detection-test-matrix.md) and "test execution evidence" (evidence/test-execution.md) for more detail.
 

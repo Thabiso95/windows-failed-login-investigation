@@ -65,3 +65,12 @@ Future improvements include testing the KQL against representative Sentinel data
 Disclaimer
 
 This is a learning project using synthetic data. It does not represent a live security incident, a production-ready detection, or proof of a real account compromise.
+
+
+## Test Execution Evidence
+
+The Python detection prototype was tested against four synthetic scenarios. All four passed.
+
+![Python detection test results](screenshots/Screenshot_20261015_110832_Chrome.jpg)
+
+See the [detection test matrix](test-results/detection-test-matrix.md) for the expected and observed outcomes.

@@ -1,0 +1,10 @@
+SecurityEvent
+| where TimeGenerated > ago(10m)
+| where EventID == 4625
+| where isnotempty(IpAddress)
+| summarize
+FailedAttempts = count(),
+TargetedAccounts = dcount(TargetAccount)
+by IpAddress, bin(TimeGenerated, 10m)
+| where FailedAttempts >= 5
+| order by FailedAttempts desc

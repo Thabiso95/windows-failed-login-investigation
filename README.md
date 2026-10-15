@@ -74,3 +74,23 @@ The Python detection prototype was tested against four synthetic scenarios. All 
 ![Python detection test results](screenshots/Screenshot_20261015_110832_Chrome.jpg)
 
 See the [detection test matrix](test-results/detection-test-matrix.md) for the expected and observed outcomes.
+
+Analyst Workflow Demonstrated
+
+1. Detect: Identify repeated failed Windows authentication attempts.
+2. Correlate: Check whether a successful login follows repeated failures from the same source IP.
+3. Validate: Test expected alert behavior against four synthetic scenarios.
+4. Document: Record evidence, findings, limitations, and recommended investigative actions.
+5. Improve: Refine detection logic and identify areas requiring further validation.
+
+Project Status
+
+- [x] Synthetic Windows authentication dataset created
+- [x] Incident report documented
+- [x] Draft KQL detection queries written
+- [x] Python prototype tested against four scenarios
+- [x] Test results documented and screenshot published
+- [ ] KQL validated in a Microsoft Sentinel workspace
+- [ ] Additional testing against varied event patterns
+
+Note: Passing Python tests do not establish that the KQL queries work correctly in a live Sentinel workspace. That validation remains outstanding.

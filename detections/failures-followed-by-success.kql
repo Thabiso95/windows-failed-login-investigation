@@ -1,0 +1,39 @@
+
+let FailureThreshold = 5;
+let CorrelationWindow = 10m;
+let FailedLogons =
+    SecurityEvent
+    | where TimeGenerated > ago(24h)
+    | where EventID == 4625
+    | where isnotempty(IpAddress)
+    | project
+        FailureTime = TimeGenerated,
+        IpAddress,
+        FailedAccount = TargetAccount;
+let SuccessfulLogons =
+    SecurityEvent
+    | where TimeGenerated > ago(24h)
+    | where EventID == 4624
+    | where isnotempty(IpAddress)
+    | project
+        SuccessTime = TimeGenerated,
+        IpAddress,
+        SuccessfulAccount = TargetAccount;
+SuccessfulLogons
+| join kind=inner FailedLogons on IpAddress
+| where FailureTime < SuccessTime
+| where FailureTime >= SuccessTime - CorrelationWindow
+| summarize
+    FailedAttempts = count(),
+    TargetedAccounts = dcount(FailedAccount),
+    FirstFailure = min(FailureTime)
+    by IpAddress, SuccessTime, SuccessfulAccount
+| where FailedAttempts >= FailureThreshold
+| project
+    IpAddress,
+    SuccessfulAccount,
+    FirstFailure,
+    SuccessTime,
+    FailedAttempts,
+    TargetedAccounts
+| order by SuccessTime desc

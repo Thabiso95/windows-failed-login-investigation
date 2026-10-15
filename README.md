@@ -2,9 +2,11 @@ Windows Failed Login Investigation
 
 Project Overview
 
-This project demonstrates a basic Security Operations Centre (SOC) investigation into suspicious Windows authentication activity. It uses synthetic security events to identify repeated failed logins and investigate whether a successful login follows a burst of failures from the same source IP address.
+This project demonstrates a basic Security Operations Centre (SOC) investigation into suspicious Windows authentication activity using synthetic security event data.
 
-The project simulates part of a Tier 1 SOC analyst workflow: identifying suspicious activity, validating detection logic, documenting findings, and recommending follow-up investigation.
+The investigation focuses on repeated failed logins and whether a successful login follows a burst of failures from the same source IP address.
+
+The project simulates parts of a Tier 1 SOC analyst workflow: identifying suspicious activity, validating detection logic, documenting findings, and recommending investigative actions.
 
 Investigation Scenario
 
@@ -13,75 +15,65 @@ The sample dataset contains Windows authentication events:
 - Event ID 4625: Failed logon
 - Event ID 4624: Successful logon
 
-The primary scenario contains repeated failed login attempts against an account, followed by a successful login from the same IP address. This pattern may indicate password guessing or brute-force activity, but it does not independently prove account compromise.
+The main scenario contains repeated failed login attempts against several account names, followed by a successful login for "jsmith" from the same source IP.
 
-All event data is synthetic. The IP addresses are reserved for documentation and examples; they do not identify real attackers.
+This pattern may indicate password guessing or brute-force activity, but it does not independently prove malicious intent or account compromise.
+
+All event data is synthetic. The sample IP addresses are reserved for documentation and examples.
 
 Detection Logic
 
-The project includes draft KQL queries intended for Microsoft Sentinel:
+The project includes draft Kusto Query Language (KQL) queries intended for Microsoft Sentinel:
 
-- "detections/brute-force.kql" — identifies IP addresses associated with repeated failed logins.
-- "detections/failures-followed-by-success.kql" — correlates failed and successful logins from the same IP within a defined time window.
+- ""detections/brute-force.kql"" (detections/brute-force.kql) — identifies source IPs associated with repeated failed logins.
+- ""detections/failures-followed-by-success.kql"" (detections/failures-followed-by-success.kql) — correlates failed and successful logins from the same source IP within a defined time window.
 
-Python was used in Google Colab to validate the prototype detection behavior against synthetic test scenarios.
+Python was used in Google Colab to validate the prototype's expected behaviour against synthetic test scenarios.
 
-Validation Results
+Test Results
 
-4 of 4 test scenarios passed.
+Python prototype: 4 of 4 test scenarios passed.
 
-Scenario| Expected outcome| Result
-Repeated failures followed by same-IP success| Both alerts trigger| PASS
-Small number of failures| No alert| PASS
-Repeated failures without success| Failure-burst alert only| PASS
-Failures and success from different IPs| No same-IP correlation alert| PASS
+Test| Scenario| Expected result| Outcome
+T01| Repeated failures followed by same-IP success| Both alerts trigger| PASS
+T02| Three failed logins only| Neither alert triggers| PASS
+T03| Repeated failures without subsequent success| Failure-burst alert only| PASS
+T04| Failures followed by success from a different IP| Failure-burst alert only| PASS
 
-Detailed results: ""test-results/detection-test-matrix.md"" (test-results/detection-test-matrix.md)
+Test Execution Evidence
 
-Investigation and Documentation
+The screenshot below shows the Python prototype's test results.
 
-- ""incident-report.md"" (incident-report.md) — investigation findings and recommended response.
-- ""sample-logs.csv"" (sample-logs.csv) — synthetic Windows authentication events.
-- ""detections/"" (detections/) — draft KQL detection queries.
-- ""test-results/"" (test-results/) — validation reports and test evidence.
+"Python test results" (screenshots/Screenshot_20261015_110832_Chrome.jpg)
 
-Skills Demonstrated
+See the "detection test matrix" (test-results/detection-test-matrix.md) and "test execution evidence" (evidence/test-execution.md) for more detail.
 
-- Windows authentication event analysis
-- Failed-login and successful-login correlation
-- Basic detection engineering
-- KQL query development
-- Python-based testing
-- False-positive awareness
-- Incident documentation and investigation
-- Security alert triage and follow-up recommendations
+Investigation Documentation
 
-Limitations and Next Steps
-
-The Python prototype has been tested against the documented synthetic scenarios. The KQL queries have not yet been validated in a live Microsoft Sentinel workspace.
-
-Future improvements include testing the KQL against representative Sentinel data, refining time-window logic, investigating additional event fields, and documenting alert tuning to reduce false positives.
-
-Disclaimer
-
-This is a learning project using synthetic data. It does not represent a live security incident, a production-ready detection, or proof of a real account compromise.
-
-
-## Test Execution Evidence
-
-The Python detection prototype was tested against four synthetic scenarios. All four passed.
-
-![Python detection test results](screenshots/Screenshot_20261015_110832_Chrome.jpg)
-
-See the [detection test matrix](test-results/detection-test-matrix.md) for the expected and observed outcomes.
+- "Incident report" (incident-report.md)
+- "Synthetic authentication logs" (sample-logs.csv)
+- "Correlation and false-positive test report" (test-results/correlation-and-false-positive-tests.md)
+- "Detection test matrix" (test-results/detection-test-matrix.md)
+- "Test execution evidence" (evidence/test-execution.md)
 
 Analyst Workflow Demonstrated
 
-1. Detect: Identify repeated failed Windows authentication attempts.
-2. Correlate: Check whether a successful login follows repeated failures from the same source IP.
-3. Validate: Test expected alert behavior against four synthetic scenarios.
-4. Document: Record evidence, findings, limitations, and recommended investigative actions.
-5. Improve: Refine detection logic and identify areas requiring further validation.
+1. Detect: Identify repeated Windows authentication failures.
+2. Correlate: Check for a successful login following repeated failures from the same IP.
+3. Validate: Test expected detection behaviour against synthetic scenarios.
+4. Document: Record evidence, findings, limitations, and recommended actions.
+5. Improve: Identify weaknesses and refine detection logic.
+
+Skills and Tools
+
+- Windows Security Event IDs 4624 and 4625
+- Python and pandas
+- Kusto Query Language (KQL)
+- Microsoft Sentinel detection concepts
+- Authentication-event analysis
+- Basic detection engineering and test design
+- False-positive awareness
+- Incident documentation and triage
 
 Project Status
 
@@ -89,8 +81,17 @@ Project Status
 - [x] Incident report documented
 - [x] Draft KQL detection queries written
 - [x] Python prototype tested against four scenarios
-- [x] Test results documented and screenshot published
+- [x] Test results documented
+- [x] Screenshot of test results added to the README
 - [ ] KQL validated in a Microsoft Sentinel workspace
 - [ ] Additional testing against varied event patterns
 
-Note: Passing Python tests do not establish that the KQL queries work correctly in a live Sentinel workspace. That validation remains outstanding.
+Limitations
+
+The Python prototype passed the four documented synthetic test scenarios. These results do not establish that the KQL queries execute correctly in Microsoft Sentinel.
+
+The KQL queries remain drafts pending schema verification, execution, and further testing. Correlation by source IP and time does not prove that events originated from the same person or device.
+
+Disclaimer
+
+This is a personal learning project using synthetic data. It does not represent a live security incident, a production-ready detection, or proof of a real account compromise.

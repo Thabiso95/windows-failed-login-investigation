@@ -43,8 +43,7 @@ T04| Failures followed by success from a different IP| Failure-burst alert only|
 Test Execution Evidence
 
 The screenshot below shows the Python prototype's test results.
-
-(screenshots/python-test-results.jpg)
+![Python test results](screenshots/python-test-results.jpg)
 
 See the "detection test matrix" (test-results/detection-test-matrix.md) and "test execution evidence" (evidence/test-execution.md) for more detail.
 
